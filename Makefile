@@ -7,10 +7,10 @@ RUFF = $(POETRY) run ruff
 PYTEST = $(POETRY) run pytest
 
 setup:
-	pyenv install -s $(PYTHON_VERSION)
-	pyenv virtualenv -f $(PYTHON_VERSION) fastapi-template
-	pyenv local fastapi-template
+	pyenv install $(PYTHON_VERSION)
+	pyenv local $(PYTHON_VERSION)
 	$(POETRY) install
+	cp .env.example .env
 
 dev:
 	$(POETRY) run uvicorn $(APP_NAME) --reload
