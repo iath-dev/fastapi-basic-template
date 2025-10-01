@@ -6,10 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from loguru import logger
 from sqlalchemy.exc import IntegrityError
 
-from src.core.config import get_setting
-from src.core.exceptions import AppError
-from src.core.logging import setup_logging
-from src.exceptions.handlers import (
+from app.api.router import api_router
+from app.core.config import get_setting
+from app.core.exceptions import AppError
+from app.core.logging import setup_logging
+from app.exceptions.handlers import (
     app_exception_handler,
     generic_exception_handler,
     integrity_error_handler,
@@ -55,6 +56,8 @@ def create_application() -> FastAPI:
             allow_methods=["*"],
             allow_headers=["*"],
         )
+
+    app.include_router(api_router)
 
     return app
 

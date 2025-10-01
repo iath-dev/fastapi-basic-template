@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Basic template for an project of FastAPI with Poetry"
 authors = ["iath-dev <developer.iath@gmail.com>"]
 readme = "README.md"
-packages = [{include="src"}]
+packages = [{include="app"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"
@@ -19,6 +19,8 @@ python-multipart = "^0.0.20"
 sqlalchemy = "^2.0.43"
 alembic = "^1.16.5"
 asyncpg = "^0.30.0"
+inflect = "^7.5.0"
+inflection = "^0.5.1"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.13.2"

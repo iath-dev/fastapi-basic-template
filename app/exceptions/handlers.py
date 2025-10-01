@@ -4,8 +4,8 @@ from fastapi.responses import JSONResponse
 from loguru import logger
 from sqlalchemy.exc import IntegrityError
 
-from src.core.exceptions import AppError
-from src.schemas.base import ErrorDetail, ErrorResponse
+from app.core.exceptions import AppError
+from app.schemas.base import ErrorDetail, ErrorResponse
 
 
 async def app_exception_handler(request: Request, exc: AppError):

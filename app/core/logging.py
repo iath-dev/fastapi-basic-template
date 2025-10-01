@@ -3,7 +3,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from src.core.config import get_setting
+from app.core.config import get_setting
 
 _settings = get_setting()
 
