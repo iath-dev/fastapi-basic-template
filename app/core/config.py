@@ -23,8 +23,9 @@ class GlobalSettings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 15
     REFRESH_TOKEN_EXPIRE_DAYS: int = 30
 
-    # Database - Only DATABASE_URL
+    # Database
     DATABASE_URL: str
+    SYNC_DATABASE_URL: str | None = None
 
     @field_validator("DATABASE_URL")
     @classmethod
@@ -35,6 +36,17 @@ class GlobalSettings(BaseSettings):
         elif v.startswith("postgresql://"):
             return v.replace("postgresql://", "postgresql+asyncpg://", 1)
         return v
+
+    @field_validator("SYNC_DATABASE_URL")
+    @classmethod
+    def validate_sync_database_url(cls, v: str, values) -> str:
+        """Convert postgresql+asyncpg:// to postgresql:// if needed"""
+        if v:
+            return v
+        db_url = values.data.get("DATABASE_URL")
+        if db_url.startswith("postgresql+asyncpg://"):
+            return db_url.replace("postgresql+asyncpg://", "postgresql://", 1)
+        return db_url
 
     # CORS origins
     BACKEND_CORS_ORIGINS: list[str] | None = []
@@ -52,7 +64,7 @@ class GlobalSettings(BaseSettings):
     LOG_LEVEL: str = "INFO"
 
     model_config = SettingsConfigDict(
-        env_file=".env", case_sensitive=True, extra="allow"
+        env_file=".env", case_sensitive=True, extra="ignore"
     )
 
 

@@ -5,7 +5,6 @@ from loguru import logger
 from sqlalchemy.exc import IntegrityError
 
 from app.core.exceptions import AppError
-from app.schemas.base import ErrorDetail, ErrorResponse
 
 
 async def app_exception_handler(request: Request, exc: AppError):
@@ -21,9 +20,11 @@ async def app_exception_handler(request: Request, exc: AppError):
     """
     return JSONResponse(
         status_code=exc.status_code,
-        content=ErrorResponse(
-            message=exc.message, data={"detail": exc.detail, "path": str(request.url)}
-        ),
+        content={
+            "message": exc.message,
+            "detail": exc.detail,
+            "path": str(request.url),
+        },
     )
 
 
@@ -43,17 +44,19 @@ async def validation_exception_handler(
     errors = []
     for error in exc.errors():
         errors.append(
-            ErrorDetail(
-                field=".".join(str(loc) for loc in error["loc"][1:]),
-                message=error["msg"],
-            )
+            {
+                "field": ".".join(str(loc) for loc in error["loc"][1:]),
+                "message": error["msg"],
+            }
         )
 
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-        content=ErrorResponse(
-            message="Validation error", errors=errors, data={"path": str(request.url)}
-        ),
+        content={
+            "message": "Validation error",
+            "errors": errors,
+            "path": str(request.url),
+        },
     )
 
 
@@ -76,10 +79,11 @@ async def integrity_error_handler(
 
     return JSONResponse(
         status_code=status.HTTP_409_CONFLICT,
-        content=ErrorResponse(
-            message="Database constraint violation",
-            data={"detail": detail, "path": str(request.url)},
-        ),
+        content={
+            "message": "Database constraint violation",
+            "detail": detail,
+            "path": str(request.url),
+        },
     )
 
 
@@ -98,8 +102,5 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
 
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-        content=ErrorResponse(
-            message="Internal server error",
-            data={"path": str(request.url)},
-        ),
+        content={"message": "Internal server error", "path": str(request.url)},
     )

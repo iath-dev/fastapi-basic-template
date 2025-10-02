@@ -10,6 +10,8 @@ from app.api.router import api_router
 from app.core.config import get_setting
 from app.core.exceptions import AppError
 from app.core.logging import setup_logging
+from app.db.base import Base
+from app.db.session import engine
 from app.exceptions.handlers import (
     app_exception_handler,
     generic_exception_handler,
@@ -20,6 +22,11 @@ from app.exceptions.handlers import (
 _settings = get_setting()
 
 
+async def create_db_and_tables():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.create_all)
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     setup_logging()
@@ -27,6 +34,7 @@ async def lifespan(app: FastAPI):
     logger.info(f"Environment: {_settings.ENVIRONMENT}")
     logger.info(f"Version: {_settings.VERSION}")
     logger.debug(f"Database URL: {_settings.DATABASE_URL[:50]}...")
+    await create_db_and_tables()
     yield
     logger.info("⛔ Shutting down FastAPI application")
 

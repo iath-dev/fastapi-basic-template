@@ -21,6 +21,7 @@ alembic = "^1.16.5"
 asyncpg = "^0.30.0"
 inflect = "^7.5.0"
 inflection = "^0.5.1"
+psycopg2-binary = "^2.9.10"
 
 [tool.poetry.group.dev.dependencies]
 ruff = "^0.13.2"
