@@ -1,4 +1,4 @@
-from pydantic import EmailStr, Field
+from pydantic import ConfigDict, EmailStr, Field
 
 from app.schemas.base import BaseSchema, TimestampMixin, UUIDMixin
 
@@ -12,13 +12,21 @@ class UserBase(BaseSchema):
 class UserCreate(UserBase):
     """Schema for user creation"""
 
-    password: str = Field(..., description="User password")
+    password: str = Field("2HYcRiDeN", description="User password")
 
 
-class UserUpdate(UserBase):
+class UserUpdate(UserCreate):
     """Schema for user update"""
 
-    password: str | None = None
+    pass
+
+
+class CreateUser(UserBase):
+    """Schema for user creation"""
+
+    hashed_password: str = Field(..., description="User password")
+
+    model_config = ConfigDict(from_attributes=True)
 
 
 class UserInDB(UserBase, UUIDMixin, TimestampMixin):

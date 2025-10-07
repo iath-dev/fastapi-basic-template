@@ -39,13 +39,19 @@ class GlobalSettings(BaseSettings):
 
     @field_validator("SYNC_DATABASE_URL")
     @classmethod
-    def validate_sync_database_url(cls, v: str, values) -> str:
-        """Convert postgresql+asyncpg:// to postgresql:// if needed"""
+    def validate_sync_database_url(cls, v: str | None, info) -> str:
+        """Convert async URL to sync URL for Alembic"""
         if v:
             return v
-        db_url = values.data.get("DATABASE_URL")
+
+        # Use validated DATABASE_URL from context
+        db_url = info.data.get("DATABASE_URL")
+        if not db_url:
+            raise ValueError("DATABASE_URL must be set")
+
         if db_url.startswith("postgresql+asyncpg://"):
             return db_url.replace("postgresql+asyncpg://", "postgresql://", 1)
+
         return db_url
 
     # CORS origins

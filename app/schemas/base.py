@@ -38,6 +38,14 @@ class ResponseBase(BaseSchema, Generic[T]):
     message: str = "Operation successful"
     data: T | None = None
 
+    @classmethod
+    def success_response(cls, data: T, message: str = "Operation successful"):
+        return cls(success=True, message=message, data=data)
+
+    @classmethod
+    def error_response(cls, message: str, data: Any = None):
+        return cls(success=False, message=message, data=data)
+
 
 class PaginationMeta(BaseSchema):
     """Pagination metadata"""

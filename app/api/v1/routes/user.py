@@ -1,30 +1,41 @@
 from fastapi import APIRouter, Depends
 
-from app.core.deps import get_user_repository
-from app.repositories.user_repository import UserRepository
-from app.schemas.base import ResponseBase
-from app.schemas.user import UserCreate, UserSchema
+from app.schemas.base import PaginationMeta, PaginationResponse, ResponseBase
+from app.schemas.user import UserCreate, UserInDB
+from app.services.user_service import UserService, get_user_service
 
 router = APIRouter(tags=["Users"])
 
-_get_user_repository: UserRepository = Depends(get_user_repository)
+_user_service = Depends(get_user_service)
 
 
-@router.get("/", response_model=ResponseBase[list[UserSchema]])
+@router.get("/", response_model=PaginationResponse[UserInDB])
 async def get_users(
-    user_repository=_get_user_repository,
+    user_service: UserService = _user_service,
     skip: int = 0,
     limit: int = 100,
 ):
     """Get all users"""
-    users = await user_repository.get_all(skip, limit)
-    return ResponseBase(data=users)
+    total, users = await user_service.list_users(skip, limit)
+
+    meta = PaginationMeta(
+        page=(skip // limit) + 1,
+        per_page=limit,
+        total=total,
+        pages=(total + limit - 1) // limit,
+        has_next=skip + limit < total,
+        has_prev=skip > 0,
+    )
+
+    return PaginationResponse(data=users, meta=meta)
 
 
-@router.post("/", response_model=ResponseBase[UserSchema])
+@router.post("/", response_model=ResponseBase[UserInDB])
 async def create_user(
     user: UserCreate,
-    user_repository=_get_user_repository,
+    user_service: UserService = _user_service,
 ):
     """Create and user"""
-    print(user)
+    user = await user_service.create_user(email=user.email, password=user.password)
+
+    return ResponseBase.success_response(data=user)
