@@ -1,27 +1,77 @@
-[project]
+[tool.poetry]
 name = "fastapi-basic-template"
 version = "0.1.0"
 description = "Basic template for an project of FastAPI with Poetry"
-authors = [
-    {name = "iath-dev",email = "developer.iath@gmail.com"}
-]
+authors = ["iath-dev <developer.iath@gmail.com>"]
 readme = "README.md"
-requires-python = ">=3.11"
-dependencies = [
-    "fastapi (>=0.118.0,<0.119.0)",
-    "uvicorn[standard] (>=0.37.0,<0.38.0)",
-    "pydantic-settings (>=2.11.0,<3.0.0)"
-]
+packages = [{include="app"}]
 
+[tool.poetry.dependencies]
+python = "^3.11"
+fastapi = "^0.118.0"
+uvicorn = {extras = ["standard"], version = "^0.37.0"}
+pydantic-settings = "^2.11.0"
+loguru = "^0.7.3"
+pydantic = {extras = ["email"], version = "^2.11.9"}
+python-jose = {extras = ["cryptography"], version = "^3.5.0"}
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}
+python-multipart = "^0.0.20"
+sqlalchemy = "^2.0.43"
+alembic = "^1.16.5"
+asyncpg = "^0.30.0"
+inflect = "^7.5.0"
+inflection = "^0.5.1"
+psycopg2-binary = "^2.9.10"
+bcrypt = "<4.0.0"
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.13.2"
+mypy = "^1.18.2"
+isort = "^6.0.1"
+pre-commit = "^4.3.0"
+
+
+[tool.poetry.group.test.dependencies]
+pytest = "^8.4.2"
+httpx = "^0.28.1"
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]
 build-backend = "poetry.core.masonry.api"
 
-[dependency-groups]
-dev = [
-    "ruff (>=0.13.2,<0.14.0)",
-    "mypy (>=1.18.2,<2.0.0)",
-    "pytest (>=8.4.2,<9.0.0)",
-    "httpx (>=0.28.1,<0.29.0)"
+[tool.ruff]
+line-length = 88
+target-version = "py311"
+
+# Linting configuration
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle errors
+    "W",   # pycodestyle warnings  
+    "F",   # pyflakes
+    "I",   # isort
+    "C",   # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "UP",  # pyupgrade
+    "N",   # pep8-naming
 ]
+
+ignore = [
+    "E501",  # line too long (handled by formatter)
+    "C901",  # too complex
+]
+
+# Import sorting configuration
+[tool.ruff.lint.isort]
+known-first-party = ["app"]
+
+# Per-file ignores
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
+"**/tests/*" = ["S101"]
+
+# Formatting configuration
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "auto"
